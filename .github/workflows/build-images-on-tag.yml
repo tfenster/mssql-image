@@ -55,8 +55,8 @@ jobs:
           $currSpeakingImageDev = "$($speakingNameDev)-$($targets[$i])"
           $currSpeakingImageExp = "$($speakingNameExp)-$($targets[$i])"
 
-          $buildCmdDev = "docker build --build-arg BASE=$targets[$i] --build-arg DEV_ISO=$devIso --build-arg CU=$cu --build-arg VERSION=$technicalVersion --build-arg TYPE=dev -t $currTechnicalImageDev -t $currSpeakingImageDev ."
-          $buildCmdExp = "docker build --build-arg BASE=$targets[$i] --build-arg EXP_EXE=$expExe --build-arg CU=$cu --build-arg VERSION=$technicalVersion --build-arg TYPE=exp -t $currTechnicalImageExp -t $currSpeakingImageExp ."
+          $buildCmdDev = "docker build --build-arg BASE=$($targets[$i]) --build-arg DEV_ISO=$devIso --build-arg CU=$cu --build-arg VERSION=$technicalVersion --build-arg TYPE=dev -t $currTechnicalImageDev -t $currSpeakingImageDev ."
+          $buildCmdExp = "docker build --build-arg BASE=$($targets[$i]) --build-arg EXP_EXE=$expExe --build-arg CU=$cu --build-arg VERSION=$technicalVersion --build-arg TYPE=exp -t $currTechnicalImageExp -t $currSpeakingImageExp ."
           $buildCmds.Add($buildCmdDev)
           $buildCmds.Add($buildCmdExp)
 
