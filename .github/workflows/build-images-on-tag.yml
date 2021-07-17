@@ -1,0 +1,124 @@
+name: Build Images on tag
+
+on:
+  push:
+    tags:
+    - 'v*' 
+
+jobs:
+
+  build:
+
+    runs-on: self-hosted
+
+    steps:
+    - uses: actions/checkout@v1
+    
+    - uses: azure/docker-login@v1
+      with:
+        username: ${{ secrets.docker_user }}
+        password: ${{ secrets.docker_pwd }}
+
+    - name: Set up commands
+      run: |
+        $targets = @("ltsc2019", "2004", "20H2")
+        $devIso = "https://download.microsoft.com/download/7/c/1/7c14e92e-bdcb-4f89-b7cf-93543e7112d1/SQLServer2019-x64-ENU-Dev.iso"
+        $expExe = "https://download.microsoft.com/download/7/c/1/7c14e92e-bdcb-4f89-b7cf-93543e7112d1/SQLEXPR_x64_ENU.exe"
+        $cu = "https://download.microsoft.com/download/6/e/7/6e72dddf-dfa4-4889-bc3d-e5d3a0fd11ce/SQLServer2019-KB5003249-x64.exe"
+
+        $technicalVersion = "15.0.4138.2"
+        $technicalNameDev = "tobiasfenster/mssql-server-dev-unsupported:$($technicalVersion)"
+        $technicalNameExp = "tobiasfenster/mssql-server-exp-unsupported:$($technicalVersion)"
+        
+        $technicalManifestCmdDev = "docker manifest create $($technicalNameDev)"
+        $technicalManifestPushCmdDev = "docker manifest push $($technicalNameDev)"
+        $technicalManifestCmdExp = "docker manifest create $($technicalNameExp)"
+        $technicalManifestPushCmdExp = "docker manifest push $($technicalNameExp)"
+
+        $speakingVersion = ((Invoke-Expression "git describe --abbrev=0 --tags").Substring(1))
+        $speakingNameDev = "tobiasfenster/mssql-server-dev-unsupported:$($speakingVersion)"
+        $speakingNameExp = "tobiasfenster/mssql-server-exp-unsupported:$($speakingVersion)"
+        
+        $speakingManifestCmdDev = "docker manifest create $($speakingNameDev)"
+        $speakingManifestPushCmdDev = "docker manifest push $($speakingNameDev)"
+        $speakingManifestCmdExp = "docker manifest create $($speakingNameExp)"
+        $speakingManifestPushCmdExp = "docker manifest push $($speakingNameExp)"
+
+        $buildCmds = New-Object System.Collections.Generic.List[System.String]
+        $imgPushCmds = New-Object System.Collections.Generic.List[System.String]
+        $manifestCmds = New-Object System.Collections.Generic.List[System.String]
+        $manifestPushCmds = New-Object System.Collections.Generic.List[System.String]
+
+        for ($i=0; $i -lt $targets.length; $i++){
+          $currTechnicalImageDev = "$($technicalNameDev)-$($targets[$i])"
+          $currTechnicalImageExp = "$($technicalNameExp)-$($targets[$i])"
+          $currSpeakingImageDev = "$($speakingNameDev)-$($targets[$i])"
+          $currSpeakingImageExp = "$($speakingNameExp)-$($targets[$i])"
+
+          $buildCmdDev = "docker build --build-arg BASE=$targets[$i] --build-arg DEV_ISO=$devIso --build-arg CU=$cu --build-arg VERSION=$technicalVersion --build-arg TYPE=dev -t $currTechnicalImageDev -t $currSpeakingImageDev ."
+          $buildCmdExp = "docker build --build-arg BASE=$targets[$i] --build-arg EXP_EXE=$expExe --build-arg CU=$cu --build-arg VERSION=$technicalVersion --build-arg TYPE=exp -t $currTechnicalImageExp -t $currSpeakingImageExp ."
+          $buildCmds.Add($buildCmdDev)
+          $buildCmds.Add($buildCmdExp)
+
+          $imgPushCmdDev = "docker push $($currTechnicalImageDev) --all-tags"
+          $imgPushCmdExp = "docker push $($currTechnicalImageExp) --all-tags"
+          $imgPushCmds.Add($imgPushCmdDev)
+          $imgPushCmds.Add($imgPushCmdExp)
+
+          $technicalManifestCmdDev = "$technicalManifestCmdDev $currTechnicalImageDev"
+          $technicalManifestCmdExp = "$technicalManifestCmdExp $currTechnicalImageExp"
+          $speakingManifestCmdDev = "$speakingManifestCmdDev $currSpeakingImageDev"
+          $speakingManifestCmdExp = "$speakingManifestCmdExp $currSpeakingImageExp"
+        }
+
+        $manifestCmds.Add($technicalManifestCmdDev)
+        $manifestCmds.Add($technicalManifestCmdExp)
+        $manifestCmds.Add($speakingManifestCmdDev)
+        $manifestCmds.Add($speakingManifestCmdExp)
+        $manifestPushCmds.Add($technicalManifestPushCmdDev)
+        $manifestPushCmds.Add($technicalManifestPushCmdExp)
+        $manifestPushCmds.Add($speakingManifestPushCmdDev)
+        $manifestPushCmds.Add($speakingManifestPushCmdExp)
+
+        echo "buildCmdsString=$($buildCmds -join "###")" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        echo "imgPushCmdsString=$($imgPushCmds -join "###")" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        echo "manifestCmdsString=$($manifestCmds -join "###")" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        echo "manifestPushCmdsString=$($manifestPushCmds -join "###")" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+        echo $(jq -c '. + { "experimental": \"enabled\" }' "$env:DOCKER_CONFIG\config.json") | Out-File -Encoding ASCII "$env:DOCKER_CONFIG\config.json"
+
+    - name: Build Docker images
+      run: |
+        $buildCmds = $env:buildCmdsString.Split("###", [StringSplitOptions]::RemoveEmptyEntries)
+
+        foreach ($buildCmd in $buildCmds) {
+          Write-Host $buildCmd
+          Invoke-Expression $buildCmd
+        }
+
+    - name: Push Docker images
+      run: |
+        $imgPushCmds = $env:imgPushCmdsString.Split("###", [StringSplitOptions]::RemoveEmptyEntries)
+
+        foreach ($imgPushCmd in $imgPushCmds) {
+          Write-Host $imgPushCmd
+          Invoke-Expression $imgPushCmd
+        }
+
+    - name: Create Docker manifests
+      run: |
+        $manifestCmds = $env:manifestCmdsString.Split("###", [StringSplitOptions]::RemoveEmptyEntries)
+
+        foreach ($manifestCmd in $manifestCmds) {
+          Write-Host $manifestCmd
+          Invoke-Expression $manifestCmd
+        }
+
+    - name: Push Docker manifests
+      run: |
+        $manifestPushCmds = $env:manifestPushCmdsString.Split("###", [StringSplitOptions]::RemoveEmptyEntries)
+
+        foreach ($manifestPushCmd in $manifestPushCmds) {
+          Write-Host $manifestPushCmd
+          Invoke-Expression $manifestPushCmd
+        }
