@@ -60,10 +60,10 @@ jobs:
           $buildCmds.Add($buildCmdDev)
           $buildCmds.Add($buildCmdExp)
 
-          $imgPushCmdDev = "docker push --all-tags $($currTechnicalImageDev)"
-          $imgPushCmdExp = "docker push --all-tags $($currTechnicalImageExp)"
-          $imgPushCmds.Add($imgPushCmdDev)
-          $imgPushCmds.Add($imgPushCmdExp)
+          $imgPushCmds.Add("docker push $($currTechnicalImageDev)")
+          $imgPushCmds.Add("docker push $($currTechnicalImageExp)")
+          $imgPushCmds.Add("docker push $($currSpeakingImageDev)")
+          $imgPushCmds.Add("docker push $($currSpeakingImageDev)")
 
           $technicalManifestCmdDev = "$technicalManifestCmdDev $currTechnicalImageDev"
           $technicalManifestCmdExp = "$technicalManifestCmdExp $currTechnicalImageExp"
