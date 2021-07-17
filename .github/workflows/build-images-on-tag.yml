@@ -21,7 +21,7 @@ jobs:
 
     - name: Set up commands
       run: |
-        $targets = @("ltsc2019", "2004", "20H2")
+        $targets = @("2004", "20H2")
         $devIso = "https://download.microsoft.com/download/7/c/1/7c14e92e-bdcb-4f89-b7cf-93543e7112d1/SQLServer2019-x64-ENU-Dev.iso"
         $expExe = "https://download.microsoft.com/download/7/c/1/7c14e92e-bdcb-4f89-b7cf-93543e7112d1/SQLEXPR_x64_ENU.exe"
         $cu = "https://download.microsoft.com/download/6/e/7/6e72dddf-dfa4-4889-bc3d-e5d3a0fd11ce/SQLServer2019-KB5003249-x64.exe"
@@ -60,8 +60,8 @@ jobs:
           $buildCmds.Add($buildCmdDev)
           $buildCmds.Add($buildCmdExp)
 
-          $imgPushCmdDev = "docker push $($currTechnicalImageDev) --all-tags"
-          $imgPushCmdExp = "docker push $($currTechnicalImageExp) --all-tags"
+          $imgPushCmdDev = "docker push --all-tags $($currTechnicalImageDev)"
+          $imgPushCmdExp = "docker push --all-tags $($currTechnicalImageExp)"
           $imgPushCmds.Add($imgPushCmdDev)
           $imgPushCmds.Add($imgPushCmdExp)
 
