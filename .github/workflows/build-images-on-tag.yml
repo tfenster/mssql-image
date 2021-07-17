@@ -21,7 +21,7 @@ jobs:
 
     - name: Set up commands
       run: |
-        $targets = @("2004", "20H2")
+        $targets = @("ltsc2019", "2004", "20H2")
         $devIso = "https://download.microsoft.com/download/7/c/1/7c14e92e-bdcb-4f89-b7cf-93543e7112d1/SQLServer2019-x64-ENU-Dev.iso"
         $expExe = "https://download.microsoft.com/download/7/c/1/7c14e92e-bdcb-4f89-b7cf-93543e7112d1/SQLEXPR_x64_ENU.exe"
         $cu = "https://download.microsoft.com/download/6/e/7/6e72dddf-dfa4-4889-bc3d-e5d3a0fd11ce/SQLServer2019-KB5003249-x64.exe"
@@ -55,8 +55,8 @@ jobs:
           $currSpeakingImageDev = "$($speakingNameDev)-$($targets[$i])"
           $currSpeakingImageExp = "$($speakingNameExp)-$($targets[$i])"
 
-          $buildCmdDev = "docker build --build-arg BASE=$($targets[$i]) --build-arg DEV_ISO=$devIso --build-arg CU=$cu --build-arg VERSION=$technicalVersion --build-arg TYPE=dev -t $currTechnicalImageDev -t $currSpeakingImageDev ."
-          $buildCmdExp = "docker build --build-arg BASE=$($targets[$i]) --build-arg EXP_EXE=$expExe --build-arg CU=$cu --build-arg VERSION=$technicalVersion --build-arg TYPE=exp -t $currTechnicalImageExp -t $currSpeakingImageExp ."
+          $buildCmdDev = "docker build --isolation hyperv --build-arg BASE=$($targets[$i]) --build-arg DEV_ISO=$devIso --build-arg CU=$cu --build-arg VERSION=$technicalVersion --build-arg TYPE=dev -t $currTechnicalImageDev -t $currSpeakingImageDev ."
+          $buildCmdExp = "docker build --isolation hyperv --build-arg BASE=$($targets[$i]) --build-arg EXP_EXE=$expExe --build-arg CU=$cu --build-arg VERSION=$technicalVersion --build-arg TYPE=exp -t $currTechnicalImageExp -t $currSpeakingImageExp ."
           $buildCmds.Add($buildCmdDev)
           $buildCmds.Add($buildCmdExp)
 
