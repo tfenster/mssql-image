@@ -63,7 +63,7 @@ jobs:
           $imgPushCmds.Add("docker push $($currTechnicalImageDev)")
           $imgPushCmds.Add("docker push $($currTechnicalImageExp)")
           $imgPushCmds.Add("docker push $($currSpeakingImageDev)")
-          $imgPushCmds.Add("docker push $($currSpeakingImageDev)")
+          $imgPushCmds.Add("docker push $($currSpeakingImageExp)")
 
           $technicalManifestCmdDev = "$technicalManifestCmdDev $currTechnicalImageDev"
           $technicalManifestCmdExp = "$technicalManifestCmdExp $currTechnicalImageExp"
