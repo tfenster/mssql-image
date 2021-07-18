@@ -18,7 +18,7 @@ if($accept_eula -ne "Y" -And $accept_eula -ne "y")
 # start the service
 Write-Host "Starting SQL Server"
 $SqlServiceName = 'MSSQLSERVER'; 
-if ($env:TYPE -eq 'exp') { 
+if (-not [string]::isNullOrEmpty($env:EXP_EXE)) { 
     $SqlServiceName = 'MSSQL$SQLEXPRESS'; 
 } 
 start-service $SqlServiceName
