@@ -17,7 +17,11 @@ if($accept_eula -ne "Y" -And $accept_eula -ne "y")
 
 # start the service
 Write-Host "Starting SQL Server"
-start-service MSSQLSERVER
+$SqlServiceName = 'MSSQLSERVER'; 
+if ($env:TYPE -eq 'exp') { 
+    $SqlServiceName = 'MSSQL$SQLEXPRESS'; 
+} 
+start-service $SqlServiceName
 
 if($sa_password -eq "_") {
     if (Test-Path $env:sa_password_path) {
