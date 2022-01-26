@@ -6,6 +6,8 @@
 $sa_password = $env:sa_password
 $attach_dbs = $env:attach_dbs
 $accept_eula = $env:accept_eula
+$before_startup = $env:before_startup
+$after_startup = $env:after_startup
 
 if($accept_eula -ne "Y" -And $accept_eula -ne "y")
 {
@@ -13,6 +15,21 @@ if($accept_eula -ne "Y" -And $accept_eula -ne "y")
 	Write-Host "Set the environment variable accept_eula to 'Y' if you accept the agreement."
 
     exit 1
+}
+
+# run powershell scripts before starting SQL service
+Write-Host "Running pre start-up scripts:"
+
+if (-not (test-path $before_startup))
+{
+    Write-Host "before_startup is not a valid path: $before_startup"
+    Write-Host "Skipping pre start-up scripts"
+}
+else
+{
+    Get-ChildItem $before_startup -Filter *.ps1 -File | Sort-Object Name | ForEach-Object {
+        . $before_startup\$($_.Name)
+    }
 }
 
 # start the service
@@ -64,6 +81,20 @@ if ($null -ne $dbs -And $dbs.Length -gt 0)
 }
 
 Write-Host "Started SQL Server."
+
+# run powershell scripts before starting SQL service
+Write-Host "Running post start-up scripts:"
+if (-not (test-path $after_startup))
+{
+    Write-Host "after_startup is not a valid path: $after_startup"
+    Write-Host "Skipping post start-up scripts"
+}
+else
+{
+    Get-ChildItem $after_startup -Filter *.ps1 -File | Sort-Object Name | ForEach-Object {
+        . $after_startup\$($_.Name)
+    }
+}
 
 $lastCheck = (Get-Date).AddSeconds(-2) 
 while ($true) 

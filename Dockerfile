@@ -14,7 +14,9 @@ ENV DEV_ISO=$DEV_ISO `
     sa_password="_" `
     attach_dbs="[]" `
     accept_eula="_" `
-    sa_password_path="C:\ProgramData\Docker\secrets\sa-password"
+    sa_password_path="C:\ProgramData\Docker\secrets\sa-password" `
+    before_startup="C:\before-startup" `
+    $after_startup="C:\after-startup"
 
 LABEL org.opencontainers.image.authors="Tobias Fenster (https://tobiasfenster.io)"
 LABEL org.opencontainers.image.source="https://github.com/tfenster/mssql-image"
