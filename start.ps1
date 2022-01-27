@@ -82,7 +82,7 @@ if ($null -ne $dbs -And $dbs.Length -gt 0)
 
 Write-Host "Started SQL Server."
 
-# run powershell scripts before starting SQL service
+# run powershell scripts after starting SQL service
 Write-Host "Running post start-up scripts:"
 if (-not (test-path $after_startup))
 {
