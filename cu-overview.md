@@ -1,3 +1,6 @@
+# 2019 CU 16
+15.0.4223.1 and https://download.microsoft.com/download/6/e/7/6e72dddf-dfa4-4889-bc3d-e5d3a0fd11ce/SQLServer2019-KB5011644-x64.exe
+
 # 2019 CU 15
 15.0.4198.2 and http://download.windowsupdate.com/d/msdownload/update/software/updt/2022/01/sqlserver2019-kb5008996-x64_f914e20d97650c2b2c09bd8f3d35d3f0feb1afd3.exe
 
