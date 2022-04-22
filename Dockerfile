@@ -87,6 +87,7 @@ RUN if (-not [string]::IsNullOrEmpty($env:CU)) { `
         Write-Host ('Install CU from ' + $env:CU) ; `
         Invoke-WebRequest -UseBasicParsing -Uri $env:CU -OutFile c:\SQLServer-cu.exe ; `
         .\SQLServer-cu.exe /q /IAcceptSQLServerLicenseTerms /Action=Patch /AllInstances ; `
+        Start-Sleep -Seconds 6*60 ; `
         $try = 0; `
         while ($try -lt 20) { `
             try { `
