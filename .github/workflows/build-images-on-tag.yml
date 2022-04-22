@@ -38,11 +38,20 @@ jobs:
         $speakingVersion = ((Invoke-Expression "git describe --abbrev=0 --tags").Substring(1))
         $speakingNameDev = "tobiasfenster/mssql-server-dev-unsupported:$($speakingVersion)"
         $speakingNameExp = "tobiasfenster/mssql-server-exp-unsupported:$($speakingVersion)"
+
+        $shortVersion = $speakingVersion.Split("-")[0]
+        $shortNameDev = "tobiasfenster/mssql-server-dev-unsupported:$($shortVersion)-latest"
+        $shortNameExp = "tobiasfenster/mssql-server-exp-unsupported:$($shortVersion)-latest"
         
         $speakingManifestCmdDev = "docker manifest create $($speakingNameDev)"
         $speakingManifestPushCmdDev = "docker manifest push $($speakingNameDev)"
         $speakingManifestCmdExp = "docker manifest create $($speakingNameExp)"
         $speakingManifestPushCmdExp = "docker manifest push $($speakingNameExp)"
+
+        $shortManifestCmdDev = "docker manifest create $($shortNameDev)"
+        $shortManifestPushCmdDev = "docker manifest push $($shortNameDev)"
+        $shortManifestCmdExp = "docker manifest create $($shortNameExp)"
+        $shortManifestPushCmdExp = "docker manifest push $($shortNameExp)"
 
         $buildCmds = New-Object System.Collections.Generic.List[System.String]
         $imgPushCmds = New-Object System.Collections.Generic.List[System.String]
@@ -69,16 +78,24 @@ jobs:
           $technicalManifestCmdExp = "$technicalManifestCmdExp $currTechnicalImageExp"
           $speakingManifestCmdDev = "$speakingManifestCmdDev $currSpeakingImageDev"
           $speakingManifestCmdExp = "$speakingManifestCmdExp $currSpeakingImageExp"
+          $shortManifestCmdDev = "$shortManifestCmdDev $currSpeakingImageDev"
+          $shortManifestCmdExp = "$shortManifestCmdExp $currSpeakingImageExp"
         }
+
+
 
         $manifestCmds.Add($technicalManifestCmdDev)
         $manifestCmds.Add($technicalManifestCmdExp)
         $manifestCmds.Add($speakingManifestCmdDev)
         $manifestCmds.Add($speakingManifestCmdExp)
+        $manifestCmds.Add($shortManifestCmdDev)
+        $manifestCmds.Add($shortManifestCmdExp)
         $manifestPushCmds.Add($technicalManifestPushCmdDev)
         $manifestPushCmds.Add($technicalManifestPushCmdExp)
         $manifestPushCmds.Add($speakingManifestPushCmdDev)
         $manifestPushCmds.Add($speakingManifestPushCmdExp)
+        $manifestPushCmds.Add($shortManifestPushCmdDev)
+        $manifestPushCmds.Add($shortManifestPushCmdExp)
 
         echo "buildCmdsString=$($buildCmds -join "###")" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
         echo "imgPushCmdsString=$($imgPushCmds -join "###")" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
