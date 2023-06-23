@@ -30,6 +30,7 @@ RUN $ProgressPreference = 'SilentlyContinue'; `
     Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')); `
     choco feature enable -n allowGlobalConfirmation; `
     choco install --no-progress --limit-output vim 7zip sqlpackage; `
+    Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1; `
     refreshenv;
 
 RUN if (-not [string]::IsNullOrEmpty($env:DEV_ISO)) { `
