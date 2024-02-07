@@ -20,7 +20,7 @@ if($accept_eula -ne "Y" -And $accept_eula -ne "y")
 # run powershell scripts before starting SQL service
 Write-Host "Running pre start-up scripts:"
 
-if (-not (test-path $before_startup))
+if (($null -eq $before_startup ) -or( -not (test-path $before_startup)))
 {
     Write-Host "before_startup is not a valid path: $before_startup"
     Write-Host "Skipping pre start-up scripts"
@@ -84,7 +84,8 @@ Write-Host "Started SQL Server."
 
 # run powershell scripts after starting SQL service
 Write-Host "Running post start-up scripts:"
-if (-not (test-path $after_startup))
+#if (($null -eq $before_startup ) -or( -not (test-path $before_startup)))
+if (($null -eq $after_startup)-or (-not (test-path $after_startup)))
 {
     Write-Host "after_startup is not a valid path: $after_startup"
     Write-Host "Skipping post start-up scripts"
