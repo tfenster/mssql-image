@@ -1,4 +1,10 @@
-# 2019 CU 22
+# 2019 CU 26
+15.0.4365.2 and https://download.microsoft.com/download/6/e/7/6e72dddf-dfa4-4889-bc3d-e5d3a0fd11ce/SQLServer2019-KB5035123-x64.exe
+
+# 2019 CU 24 and 25
+skipped
+
+# 2019 CU 23
 15.0.4335.1 and https://download.microsoft.com/download/6/e/7/6e72dddf-dfa4-4889-bc3d-e5d3a0fd11ce/SQLServer2019-KB5030333-x64.exe
 
 # 2019 CU 22
